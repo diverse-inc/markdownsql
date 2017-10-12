@@ -14,8 +14,8 @@ type SQLDefinition struct {
 func (sd SQLDefinition) ToSQLStmt() string {
 	sql := ``
 	for _, tbl := range sd.Tables {
-		sql = sql + fmt.Sprintf("DROP TABLE IF EXISTS `%s`;\n", tbl.Name)
-		sql = sql + fmt.Sprintf("CREATE TABLE `%s` (\n", tbl.Name)
+		sql = sql + fmt.Sprintf("drop table if exists `%s`;\n", tbl.Name)
+		sql = sql + fmt.Sprintf("create table `%s` (\n", tbl.Name)
 
 		length := len(tbl.Columns)
 		for i, column := range tbl.Columns {
@@ -34,10 +34,10 @@ func (sd SQLDefinition) ToSQLStmt() string {
 				comma = ``
 			}
 
-			sql = sql + fmt.Sprintf("  %s%s\n", index.ToSQLStmt(), comma)
+			sql = sql + fmt.Sprintf("  %s%s\n", index.ToSQLStmt(tbl.Name), comma)
 		}
 
-		sql = sql + fmt.Sprintln(`) ENGINE = InnoDB DEFAULT CHARSET utf8;`)
+		sql = sql + fmt.Sprintln(`) /*! engine=innodb default charset=utf8mb4 row_format=dynamic */ ;`)
 		sql = sql + fmt.Sprintln(``)
 	}
 
@@ -64,14 +64,14 @@ type ColumnDefinition struct {
 }
 
 func (cd ColumnDefinition) ToSQLStmt() string {
-	null := `NOT NULL`
+	null := `not null`
 	if cd.Null {
-		null = `NULL`
+		null = `null`
 	}
 
 	dflt := ``
 	if 0 < len(cd.Default) {
-		dflt = fmt.Sprintf("DEFAULT %s", cd.Default)
+		dflt = fmt.Sprintf("default %s", cd.Default)
 	}
 
 	key := ``
@@ -91,14 +91,16 @@ func (cd ColumnDefinition) ToSQLStmt() string {
 }
 
 type IndexDefinition struct {
+	Name     string
 	Columns  []string
 	IsUnique bool
 }
 
-func (idx IndexDefinition) ToSQLStmt() string {
+func (idx IndexDefinition) ToSQLStmt(name string) string {
+	columns := strings.Join(idx.Columns, "`,`")
+	columns = strings.Replace(columns, " ", "", -1)
 	if idx.IsUnique {
-		return fmt.Sprintf("UNIQUE(`%s`)", strings.Join(idx.Columns, "`,`"))
+		return fmt.Sprintf("unique key %s_%s(`%s`)", idx.Name, name, columns)
 	}
-
-	return fmt.Sprintf("INDEX(`%s`)", strings.Join(idx.Columns, "`,`"))
+	return fmt.Sprintf("key %s_%s(`%s`)", idx.Name, name, columns)
 }
