@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/narita-takeru/markdownsql/sam"
-	"github.com/narita-takeru/markdownsql/sqldef"
 	"os"
 	"strings"
+
+	"github.com/SAMUKEI/markdownsql/sam"
+	"github.com/SAMUKEI/markdownsql/sqldef"
 )
 
 func onTableColumns(tbl *sqldef.TableDefinition, columns map[string]string) error {
@@ -30,6 +31,7 @@ func onTableColumns(tbl *sqldef.TableDefinition, columns map[string]string) erro
 
 func onTableIndexes(tbl *sqldef.TableDefinition, columns map[string]string) error {
 	idxDef := sqldef.IndexDefinition{
+		Name:     columns[`name`],
 		Columns:  strings.Split(columns[`columns`], `,`),
 		IsUnique: columns[`unique`] == `YES`,
 	}
