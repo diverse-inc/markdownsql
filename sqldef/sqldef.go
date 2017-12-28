@@ -14,7 +14,7 @@ type SQLDefinition struct {
 func (sd SQLDefinition) ToSQLStmt() string {
 	sql := ``
 	for _, tbl := range sd.Tables {
-		sql = sql + fmt.Sprintf("drop table if exists `%s`;\n", tbl.Name)
+		// sql = sql + fmt.Sprintf("drop table if exists `%s`;\n", tbl.Name)
 		sql = sql + fmt.Sprintf("create table `%s` (\n", tbl.Name)
 
 		length := len(tbl.Columns)
