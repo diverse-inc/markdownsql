@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/SAMUKEI/markdownsql/sam"
-	"github.com/SAMUKEI/markdownsql/sqldef"
+	"github.com/diverse-inc/markdownsql/sam"
+	"github.com/diverse-inc/markdownsql/sqldef"
 )
 
 func onTableColumns(tbl *sqldef.TableDefinition, columns map[string]string) error {
